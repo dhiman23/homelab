@@ -1,0 +1,2 @@
+ manifests/ingress-nginx/deploy.yaml
+# Source: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/kind/deploy.yaml
