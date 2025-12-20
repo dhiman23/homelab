@@ -83,8 +83,7 @@ jobs:
       needs: docker-build-and-scan
       steps:
         - name: Checkout code
-          run: |
-            git clone https://github.com/dhiman23/homelab.git
+          uses: actions/checkout@v2
         - name: Update Product Catalog Image Tag in K8s Manifests
           run: |
             cd App/microservices-demo-main/kubernetes-manifests/productCatalog
