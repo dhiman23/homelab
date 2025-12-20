@@ -87,5 +87,5 @@ jobs:
             git clone https://github.com/dhiman23/homelab.git
         - name: Update Product Catalog Image Tag in K8s Manifests
           run: |
-            cd App/microservices-demo-main/kubernetes-manifests/
+            cd App/microservices-demo-main/kubernetes-manifests/prductCatalog
             sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}|g" productcatalogservice.yaml
