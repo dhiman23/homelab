@@ -88,6 +88,7 @@ jobs:
           run: |
            cd App/microservices-demo-main/kubernetes-manifests/productCatalog
            echo "Before:"
-           cat productcatalogservice.yaml sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.sha }}|g" productcatalogservice.yaml
+           cat productcatalogservice.yaml 
+           sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.sha }}|g" productcatalogservice.yaml
            echo "After:"
            cat productcatalogservice.yaml
