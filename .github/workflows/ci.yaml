@@ -41,7 +41,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-         version: v1.60.1
+         version: v1.55.2
          working-directory: ./App/microservices-demo-main/src/productcatalogservice
 
 
@@ -67,6 +67,7 @@ jobs:
 
   update-manifests:
       runs-on: ubuntu-latest
+      needas: docker
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
