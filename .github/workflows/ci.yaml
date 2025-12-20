@@ -67,7 +67,7 @@ jobs:
 
   update-manifests:
       runs-on: ubuntu-latest
-      needas: docker
+      needs: docker
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
