@@ -84,11 +84,17 @@ jobs:
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
-        - name: Update Product Catalog Image Tag in K8s Manifests
+          with:
+            token: ${{ secrets.TOKEN }}
+
+        - name: Update tag in kubernetes deployment manifest
+          run: | 
+               sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/product-catalog:${{github.run_id}}|" App/microservices-demo-main/kubernetes-manifests/productCatalog/productcatalogservice.yaml
+
+        - name: Commit and push changes
           run: |
-           cd App/microservices-demo-main/kubernetes-manifests/productCatalog
-           echo "Before:"
-           cat productcatalogservice.yaml 
-           sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.sha }}|g" productcatalogservice.yaml
-           echo "After:"
-           cat productcatalogservice.yaml
+            git config --global user.email "sajaldhiman16@gmail.com"
+            git config --global user.name "Dhmian23"
+            git add App/microservices-demo-main/kubernetes-manifests/productCatalog/productcatalogservice.yaml
+            git commit -m "[CI]: Update product catalog image tag"
+            git push origin HEAD:main -f
