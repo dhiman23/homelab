@@ -1,0 +1,75 @@
+---
+name: Product Catalog CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: set up go1.25
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.25
+      - name: Build Product Catalog Service
+        run: |
+          cd App/microservices-demo-main/src/productcatalogservice
+          go build -o productcatalogservice .
+      - name: Run unit Tests
+        run: |
+          cd App/microservices-demo-main/src/productcatalogservice
+          go test ./...
+  codequality:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: go setup
+          uses: actions/setup-go@v3
+          with:
+            go-version: 1.25
+        - name: Run GoLint
+          uses: golangci/golangci-lint-action@v6
+          with:
+            version: v1.59.1
+            run: golangci-lint run
+            working-directory: ./App/microservices-demo-main/src/productcatalogservice
+
+
+  docker:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v2
+          - name: Log in to Docker Hub
+            uses: docker/login-action@v2
+            with:
+              username: ${{ secrets.DOCKER_USERNAME }}
+              password: ${{ secrets.DOCKER_PASSWORD }}
+          - name: Build and Push Product Catalog Docker Image
+            uses: docker/build-push-action@v3
+            with:
+              context: ./App/microservices-demo-main/src/productcatalogservice
+              file: ./App/microservices-demo-main/src/productcatalogservice/Dockerfile
+              push: true
+              tags: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}
+
+
+  update-manifests:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+        - name: Update Product Catalog Image Tag in K8s Manifests
+          run: |
+            cd App/microservices-demo/kubernetes-manifests
+            sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}|g" productcatalogservice.yaml
