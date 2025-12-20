@@ -26,21 +26,23 @@ jobs:
           cd App/microservices-demo-main/src/productcatalogservice
           go test ./...
   codequality:
-      runs-on: ubuntu-latest
-      env:
-        GOTOOLCHAIN: local
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-        - name: go setup
-          uses: actions/setup-go@v3
-          with:
-            go-version: 1.22
-        - name: Run GoLint
-          uses: golangci/golangci-lint-action@v6
-          with:
-            version: v1.60.1
-            working-directory: ./App/microservices-demo-main/src/productcatalogservice
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+         go-version: '1.21'
+         cache: true
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+         version: v1.60.1
+         working-directory: ./App/microservices-demo-main/src/productcatalogservice
 
 
   docker:
