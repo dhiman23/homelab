@@ -25,23 +25,22 @@ jobs:
         run: |
           cd App/microservices-demo-main/src/productcatalogservice
           go test ./...
-  codequality:
-    runs-on: ubuntu-latest
+  code-quality:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-         go-version: '1.22'
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-         version: v1.55.2
-         working-directory: ./App/microservices-demo-main/src/productcatalogservice
+        steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        
+        - name: Setup Go 1.22
+          uses: actions/setup-go@v2
+          with:
+           go-version: 1.22
+        
+        - name: Run golangci-lint
+          uses: Jerome1337/golint-action@v1.0.2
+          with:
+            golint-path: ./App/microservices-demo-main/src/productcatalogservice
 
 
   docker:
@@ -71,7 +70,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v2
           with:
-            token: ${{ secrets.GITHUB_TOKEN }}
+            token: ${{ secrets.TOKEN }}
         - name: Update Product Catalog Image Tag in K8s Manifests
           run: |
             cd App/microservices-demo/kubernetes-manifests
