@@ -1,14 +1,19 @@
 ---
 name: Product Catalog CI
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      action:
+        description: select action
+        required: true
+        type: choice
+        options:
+          - Run_CI
+          - rollback
 jobs:
   build:
+    name: CI Job
+    if: ${{ github.event.inputs.action == 'Run_CI' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -43,7 +48,7 @@ jobs:
             golint-path: ./App/microservices-demo-main/src/productcatalogservice
 
 
-  docker:
+  docker-build-and-scan:
         runs-on: ubuntu-latest
         needs: build
         steps:
@@ -55,17 +60,34 @@ jobs:
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
           - name: Build and Push Product Catalog Docker Image
-            uses: docker/build-push-action@v3
+            run: |
+              cd App/microservices-demo-main/src/productcatalogservice
+              docker build -t ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }} .
+          - name: trivy-security-scan
+            uses: aquasecurity/trivy-action@master
             with:
-              context: ./App/microservices-demo-main/src/productcatalogservice
-              file: ./App/microservices-demo-main/src/productcatalogservice/Dockerfile
-              push: true
-              tags: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}
+            
+              image-ref: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}
+
+          - name: Scan image with Trivy
+            uses: aquasecurity/trivy-action@0.20.0
+            with:
+                scan-type: sbom
+                output: sbom.json
+                image-ref: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}
+                format: table
+                severity: CRITICAL,HIGH
+                exit-code: 1
+                ignore-unfixed: true
+          - name: docker image push
+            run: |
+              docker push ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}
+         
 
 
   update-manifests:
       runs-on: ubuntu-latest
-      needs: docker
+      needs: docker-build-and-scan
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
@@ -73,5 +95,5 @@ jobs:
             token: ${{ secrets.TOKEN }}
         - name: Update Product Catalog Image Tag in K8s Manifests
           run: |
-            cd App/microservices-demo/kubernetes-manifests
+            cd App/microservices-demo-main/kubernetes-manifests
             sed -i "s|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/productcatalogservice:${{ github.run_id }}|g" productcatalogservice.yaml
