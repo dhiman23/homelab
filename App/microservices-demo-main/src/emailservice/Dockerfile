@@ -17,7 +17,7 @@ FROM --platform=$BUILDPLATFORM python:3.12.12-alpine@sha256:d82291d418d5c47f2677
 FROM base AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 
 
 RUN apk update \
     && apk add --no-cache g++ linux-headers \

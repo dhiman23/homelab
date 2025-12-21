@@ -20,7 +20,7 @@ spec:
   gatewayClassName: istio
   listeners:
   - name: http
-    port: 80 ̑
+    port: 80
     protocol: HTTP
     allowedRoutes:
       namespaces:
