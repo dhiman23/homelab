@@ -302,7 +302,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: cartservice
+        image: adijaiswal/cartservice:latest
         ports:
         - containerPort: 7070
         env:
