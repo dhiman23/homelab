@@ -1041,22 +1041,6 @@ metadata:
 
 
 ---
-#persistent Volume and Persistent Volume Claim for Redis Cart
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: redis-pv
-  capacity:
-    storage: 4Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: longhorn
-  csi:
-    driver: driver.longhorn.io
-    volumeHandle: redis-pv
-
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -1067,6 +1051,6 @@ spec:
   resources:
     requests:
       storage: 3Gi
-  storageClassName: longhorn
+  storageClassName: hostpath
 
   
