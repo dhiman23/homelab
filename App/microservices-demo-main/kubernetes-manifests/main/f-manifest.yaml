@@ -1053,6 +1053,9 @@ metadata:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: longhorn
+  csi:
+    driver: driver.longhorn.io
+    volumeHandle: redis-pv
 
 ---
 apiVersion: v1
