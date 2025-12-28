@@ -390,7 +390,8 @@ spec:
             memory: 200Mi
       volumes:
       - name: redis-data
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: redis-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -1038,3 +1039,32 @@ kind: ServiceAccount
 metadata:
   name: currencyservice
 
+
+---
+#persistent Volume and Persistent Volume Claim for Redis Cart
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: driver.longhorn.io
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: driver.longhorn.io
+
+  
