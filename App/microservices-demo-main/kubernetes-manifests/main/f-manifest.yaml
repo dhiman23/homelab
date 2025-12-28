@@ -1047,12 +1047,12 @@ kind: PersistentVolume
 metadata:
   name: redis-pv
   capacity:
-    storage: 2Gi
+    storage: 4Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: driver.longhorn.io
+  storageClassName: longhorn
 
 ---
 apiVersion: v1
@@ -1065,6 +1065,6 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: driver.longhorn.io
+  storageClassName: longhorn
 
   
