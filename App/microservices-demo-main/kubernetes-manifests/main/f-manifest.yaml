@@ -1048,7 +1048,6 @@ metadata:
   name: redis-pv
   capacity:
     storage: 4Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
